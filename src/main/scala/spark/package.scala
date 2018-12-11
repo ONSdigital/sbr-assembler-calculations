@@ -57,7 +57,6 @@ package object spark {
     .add(StructField("region", StringType, false))
     .add(StructField("employment", StringType, false))
 
-
   val leuRowSchema: StructType = new StructType()
     .add(StructField("ubrn", StringType, false))
     .add(StructField("ern", StringType, false))
@@ -258,12 +257,12 @@ package object spark {
 
     def getSeq[T](fieldName: String, eval: Option[T => Boolean] = None): Option[Seq[T]] = if (isNull(fieldName)) None else Some(row.getSeq[T](row.fieldIndex(fieldName)).filter(v => v != null && eval.map(_ (v)).getOrElse(true)))
 
-    def isNull(field: String) = try {
+    def isNull(field: String): Boolean = try {
       row.isNullAt(row.fieldIndex(field)) //if field exists and the value is null
     } catch {
       case iae: IllegalArgumentException => true //if field does not exist
       case e: Throwable => {
-        println(s"field: ${if (field == null) "null" else field.toString()}")
+        println(s"field: ${if (field == null) "null" else field.toString}")
         throw e
       }
     }

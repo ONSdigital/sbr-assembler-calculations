@@ -7,7 +7,6 @@ import input.{LoadPaye, LoadVat}
 import model.{Paye, Vat}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
-import spark.{biWithErnSchema, ruRowSchema}
 import uk.gov.ons.registers.methods.{PayeCalculator, VatCalculator}
 import util.AppParams
 import spark._
