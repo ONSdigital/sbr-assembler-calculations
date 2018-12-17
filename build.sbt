@@ -16,9 +16,6 @@ lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
 
   .settings(
-    resourceDirectory in Compile := baseDirectory.value / "resources",
-    resourceDirectory in Test := baseDirectory.value / "resources",
-
     scalaVersion := Versions.scala,
     name := "sbr-assembler-calculations",
     version := "0.1",

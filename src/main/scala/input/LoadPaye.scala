@@ -5,7 +5,7 @@ import org.apache.spark.sql.{Dataset, SparkSession}
 
 object LoadPaye extends LoadInput[Paye] {
 
-  override def loadInput(path: String) (spark: SparkSession) : Dataset[Paye] = {
+  override def loadInput(path: String) (implicit spark: SparkSession) : Dataset[Paye] = {
 
     import spark.implicits._
 

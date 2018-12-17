@@ -5,7 +5,7 @@ import org.apache.spark.sql.{Dataset, SparkSession}
 
 object LoadVat extends LoadInput[Vat] {
 
-   def loadInput  (path: String) (spark: SparkSession) : Dataset[Vat] = {
+   def loadInput  (path: String) (implicit spark: SparkSession) : Dataset[Vat] = {
 
     import spark.implicits._
 

@@ -234,13 +234,13 @@ object HFileUtils extends Serializable {
       createLinksRecord(generateLinkKey(paye, payeValue), s"$parentPrefix$legalUnit", ubrn.toString)
     ))).getOrElse(Seq[(String, HFileCell)]())
 
-  private def createLinksRecord(key: String, column: String, value: String) = createRecord(key, AppParams.HBASE_LINKS_COLUMN_FAMILY, column, value)
+  private def createLinksRecord(key: String, column: String, value: String) = createRecord(key, AppParams.HBaseLinksColumnFactory, column, value)
 
-  def createEnterpriseCell(ern: String, column: String, value: String): (String, HFileCell) = createRecord(generateEntKey(ern), AppParams.HBASE_ENTERPRISE_COLUMN_FAMILY, column, value)
+  def createEnterpriseCell(ern: String, column: String, value: String): (String, HFileCell) = createRecord(generateEntKey(ern), AppParams.HBaseEnterpriseColumnFactory, column, value)
 
-  def createLocalUnitCell(lurn: String, ern: String, column: String, value: String): (String, HFileCell) = createRecord(generateLocalUnitKey(lurn, ern), AppParams.HBASE_LOCALUNITS_COLUMN_FAMILY, column, value)
+  def createLocalUnitCell(lurn: String, ern: String, column: String, value: String): (String, HFileCell) = createRecord(generateLocalUnitKey(lurn, ern), AppParams.HBaseLocalUnitsColumnFactory, column, value)
 
-  def createLegalUnitCell(ubrn: String, ern: String, column: String, value: String): (String, HFileCell) = createRecord(generateLegalUnitKey(ubrn, ern), AppParams.HBASE_LEGALUNITS_COLUMN_FAMILY, column, value)
+  def createLegalUnitCell(ubrn: String, ern: String, column: String, value: String): (String, HFileCell) = createRecord(generateLegalUnitKey(ubrn, ern), AppParams.HBaseLegalUnitsColumnFactory, column, value)
 
   private def createRecord(key: String, columnFamily: String, column: String, value: String) = key -> HFileCell(key, columnFamily, column, value)
 
@@ -265,7 +265,7 @@ object HFileUtils extends Serializable {
   def getWorkingPropsByLegalStatus(legalStatus: String): String = legalStatus match {
     case "2" => "1"
     case "3" => "2"
-    case _ => AppParams.DEFAULT_WORKING_PROPS
+    case _ => AppParams.DefaultWorkingProps
   }
 
   def generateErn(row: Row): String = generateUniqueKey
@@ -286,4 +286,10 @@ object HFileUtils extends Serializable {
   def generateLurnFromEnt(row: Row): String = generateUniqueKey
 
   def generateUniqueKey: String = "N" + Random.alphanumeric.take(17).mkString
+
+  /**
+    * val service: SequenceGenerator = SequenceGenerator.fromHost(hostName = hostName, sessionTimeoutSec = 1, connectionTimeoutSec = 1)
+    * val lastSequence: Long = service.currentSequence.toLong + 1
+    * val nextSequence: Long = service.nextSequence.toLong
+    */
 }

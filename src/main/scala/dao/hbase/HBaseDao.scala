@@ -108,42 +108,42 @@ object HBaseDao extends Serializable {
 
       val bulkLoader = new LoadIncrementalHFiles(connection.getConfiguration)
       val regionLocator = connection.getRegionLocator(table.getName)
-      bulkLoader.doBulkLoad(new Path(AppParams.PATH_TO_LINKS_HFILE), admin, table, regionLocator)
+      bulkLoader.doBulkLoad(new Path(AppParams.PathToLinksHfile), admin, table, regionLocator)
     }
 
   def loadLinksHFile(implicit connection: Connection): Unit =
     wrapTransaction(linksTableName ){ (table, admin) =>
       val bulkLoader = new LoadIncrementalHFiles(connection.getConfiguration)
       val regionLocator = connection.getRegionLocator(table.getName)
-      bulkLoader.doBulkLoad(new Path(AppParams.PATH_TO_LINKS_HFILE), admin, table, regionLocator)
+      bulkLoader.doBulkLoad(new Path(AppParams.PathToLinksHfile), admin, table, regionLocator)
     }
 
   def loadEnterprisesHFile(implicit connection: Connection): Unit =
     wrapTransaction(entsTableName) { (table, admin) =>
       val bulkLoader = new LoadIncrementalHFiles(connection.getConfiguration)
       val regionLocator = connection.getRegionLocator(table.getName)
-      bulkLoader.doBulkLoad(new Path(AppParams.PATH_TO_ENTERPRISE_HFILE), admin, table, regionLocator)
+      bulkLoader.doBulkLoad(new Path(AppParams.PathToEnterpriseHFile), admin, table, regionLocator)
     }
 
   def loadLousHFile(implicit connection: Connection): Unit =
     wrapTransaction(lousTableName) { (table, admin) =>
       val bulkLoader = new LoadIncrementalHFiles(connection.getConfiguration)
       val regionLocator = connection.getRegionLocator(table.getName)
-      bulkLoader.doBulkLoad(new Path(AppParams.PATH_TO_LOCALUNITS_HFILE), admin, table, regionLocator)
+      bulkLoader.doBulkLoad(new Path(AppParams.PathToLocalUnitsHFile), admin, table, regionLocator)
     }
 
   def loadLeusHFile(implicit connection: Connection): Unit =
     wrapTransaction(leusTableName) { (table, admin) =>
       val bulkLoader = new LoadIncrementalHFiles(connection.getConfiguration)
       val regionLocator = connection.getRegionLocator(table.getName)
-      bulkLoader.doBulkLoad(new Path(AppParams.PATH_TO_LEGALUNITS_HFILE), admin, table, regionLocator)
+      bulkLoader.doBulkLoad(new Path(AppParams.PathToLegalUnitsHFile), admin, table, regionLocator)
     }
 
   def loadRusHFile(implicit connection: Connection): Unit =
     wrapTransaction(rusTableName) { (table, admin) =>
       val bulkLoader = new LoadIncrementalHFiles(connection.getConfiguration)
       val regionLocator = connection.getRegionLocator(table.getName)
-      bulkLoader.doBulkLoad(new Path(AppParams.PATH_TO_REPORTINGUNITS_HFILE), admin, table, regionLocator)
+      bulkLoader.doBulkLoad(new Path(AppParams.PathToReportingUnitsHFile), admin, table, regionLocator)
     }
 
   private def wrapTransaction(fullTableName: String)(action: (Table, Admin) => Unit)(implicit connection: Connection) {
@@ -214,24 +214,24 @@ object HBaseDao extends Serializable {
     }
 
     val prevTimePeriod = {
-      (AppParams.TIME_PERIOD.toInt - 1).toString
+      (AppParams.TimePeriod.toInt - 1).toString
     }
 
     val ents: RDD[HFileRow] = HBaseDao.readEnterprisesWithKeyFilter(s"~$prevTimePeriod")
     val links: RDD[HFileRow] = HBaseDao.readLinksWithKeyFilter(s"~$prevTimePeriod")
     val lous: RDD[HFileRow] = HBaseDao.readLouWithKeyFilter(s".*~$prevTimePeriod~*.")
 
-    ents.flatMap(_.toHFileCellRow(AppParams.HBASE_ENTERPRISE_COLUMN_FAMILY)).sortBy(t => s"${t._2.key}${t._2.qualifier}")
+    ents.flatMap(_.toHFileCellRow(AppParams.HBaseEnterpriseColumnFactory)).sortBy(t => s"${t._2.key}${t._2.qualifier}")
       .map(rec => (new ImmutableBytesWritable(rec._1.getBytes()), rec._2.toKeyValue))
-      .saveAsNewAPIHadoopFile(buildPath(AppParams.PATH_TO_ENTERPRISE_HFILE), classOf[ImmutableBytesWritable], classOf[KeyValue], classOf[HFileOutputFormat2])
+      .saveAsNewAPIHadoopFile(buildPath(AppParams.PathToEnterpriseHFile), classOf[ImmutableBytesWritable], classOf[KeyValue], classOf[HFileOutputFormat2])
 
-    links.flatMap(_.toHFileCellRow(AppParams.HBASE_LINKS_COLUMN_FAMILY)).sortBy(t => s"${t._2.key}${t._2.qualifier}")
+    links.flatMap(_.toHFileCellRow(AppParams.HBaseLinksColumnFactory)).sortBy(t => s"${t._2.key}${t._2.qualifier}")
       .map(rec => (new ImmutableBytesWritable(rec._1.getBytes()), rec._2.toKeyValue))
-      .saveAsNewAPIHadoopFile(buildPath(AppParams.PATH_TO_LINKS_HFILE), classOf[ImmutableBytesWritable], classOf[KeyValue], classOf[HFileOutputFormat2])
+      .saveAsNewAPIHadoopFile(buildPath(AppParams.PathToLinksHfile), classOf[ImmutableBytesWritable], classOf[KeyValue], classOf[HFileOutputFormat2])
 
-    lous.flatMap(_.toHFileCellRow(AppParams.HBASE_LOCALUNITS_COLUMN_FAMILY)).sortBy(t => s"${t._2.key}${t._2.qualifier}")
+    lous.flatMap(_.toHFileCellRow(AppParams.HBaseLocalUnitsColumnFactory)).sortBy(t => s"${t._2.key}${t._2.qualifier}")
       .map(rec => (new ImmutableBytesWritable(rec._1.getBytes()), rec._2.toKeyValue))
-      .saveAsNewAPIHadoopFile(buildPath(AppParams.PATH_TO_LOCALUNITS_HFILE), classOf[ImmutableBytesWritable], classOf[KeyValue], classOf[HFileOutputFormat2])
+      .saveAsNewAPIHadoopFile(buildPath(AppParams.PathToLocalUnitsHFile), classOf[ImmutableBytesWritable], classOf[KeyValue], classOf[HFileOutputFormat2])
   }
 
   private def unsetScanner(): Unit = AppParams.hbaseConfiguration.unset(TableInputFormat.SCAN)
@@ -268,14 +268,14 @@ object HBaseDao extends Serializable {
   private def unsetPrefixScanner(): Unit = AppParams.hbaseConfiguration.unset(TableInputFormat.SCAN)
 
   def linksTableName: String =
-    s"${AppParams.HBASE_LINKS_TABLE_NAMESPACE}:${AppParams.HBASE_LINKS_TABLE_NAME}_${AppParams.TIME_PERIOD}"
+    s"${AppParams.HBaseLinksTableNamespace}:${AppParams.HBaseLinksTableName}_${AppParams.TimePeriod}"
 
-  def leusTableName: String = s"${AppParams.HBASE_LEGALUNITS_TABLE_NAMESPACE}:${AppParams.HBASE_LEGALUNITS_TABLE_NAME}_${AppParams.TIME_PERIOD}"
+  def leusTableName: String = s"${AppParams.HBaseLegalUnitsNamespace}:${AppParams.HBaseLegalUnitsTableName}_${AppParams.TimePeriod}"
 
-  def lousTableName: String = s"${AppParams.HBASE_LOCALUNITS_TABLE_NAMESPACE}:${AppParams.HBASE_LOCALUNITS_TABLE_NAME}_${AppParams.TIME_PERIOD}"
+  def lousTableName: String = s"${AppParams.HBaseLocalUnitsNamespace}:${AppParams.HBaseLocalUnitsTableName}_${AppParams.TimePeriod}"
 
-  def rusTableName: String = s"${AppParams.HBASE_REPORTINGUNITS_TABLE_NAMESPACE}:${AppParams.HBASE_REPORTINGUNITS_TABLE_NAME}_${AppParams.TIME_PERIOD}"
+  def rusTableName: String = s"${AppParams.HBaseReportingUnitsNamespace}:${AppParams.HBaseReportingUnitsTableName}_${AppParams.TimePeriod}"
 
-  def entsTableName: String = s"${AppParams.HBASE_ENTERPRISE_TABLE_NAMESPACE}:${AppParams.HBASE_ENTERPRISE_TABLE_NAME}_${AppParams.TIME_PERIOD}"
+  def entsTableName: String = s"${AppParams.HBaseEnterpriseTableNamespace}:${AppParams.HBaseEnterpriseTableName}_${AppParams.TimePeriod}"
 
 }

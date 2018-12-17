@@ -15,8 +15,9 @@ import pipeline.BuildInfo
   */
 object CommandLineParser {
 
-  val help: Option = Option.builder("h")
-    .required(false)
+  implicit val options: Options = new Options
+
+  val help: Option = Option.builder("h").required(false)
     .hasArg(false)
     .longOpt("help")
     .desc("Print this message.")
@@ -36,224 +37,141 @@ object CommandLineParser {
     .desc("Switch debugging on")
     .build
 
-  val enterpriseTableName: Option = Option.builder("etn")
-    .required(false)
-    .hasArg(true)
-    .argName("TABLE NAME")
-    .longOpt("enterprise-table-name")
-    .desc("HBase Enterprise table name")
-    .build
-
-  val enterpriseNamespace: Option = Option.builder("ens")
-    .required(false)
-    .hasArg(true)
-    .argName("NAMESPACE")
-    .longOpt("enterprise-table-namespace")
-    .desc("Enterprise table namespace")
-    .build
-
-  val enterpriseColumnFamily: Option = Option.builder("ecf")
-    .required(false)
-    .hasArg(true)
-    .argName("COLUMN FAMILY")
-    .longOpt("enterprise-column-family")
-    .desc("Enterprise column family")
-    .build
-
-  val enterpriseHfilePath: Option = Option.builder("efp")
-    .required(false)
-    .hasArg(true)
-    .argName("FILE PATH")
-    .longOpt("enterprise-file-path")
-    .desc("Enterprise file path")
-    .build
-
-  val linksTableName: Option = Option.builder("ltn")
-    .required(false)
-    .hasArg(true)
-    .argName("TABLE NAME")
-    .longOpt("links-table-name")
-    .desc("HBase Links table name")
-    .build
-
-  val linksNamespace: Option = Option.builder("lns")
-    .required(false)
-    .hasArg(true)
-    .argName("NAMESPACE")
-    .longOpt("links-table-namespace")
-    .desc("Links table namespace")
-    .build
-
-  val linksColumnFamily: Option = Option.builder("lcf")
-    .required(false)
-    .hasArg(true)
-    .argName("COLUMN FAMILY")
-    .longOpt("links-column-family")
-    .desc("Links column family")
-    .build
-
-  val linksHfilePath: Option = Option.builder("lfp")
-    .required(false)
-    .hasArg(true)
-    .argName("FILE PATH")
-    .longOpt("links-file-path")
-    .desc("Links file path")
-    .build
-
-  val legalTableName: Option = Option.builder("letn")
-    .required(false)
-    .hasArg(true)
-    .argName("TABLE NAME")
-    .longOpt("legal-table-name")
-    .desc("HBase Legal table name")
-    .build
-
-  val legalNamespace: Option = Option.builder("lens")
-    .required(false)
-    .hasArg(true)
-    .argName("NAMESPACE")
-    .longOpt("legal-table-namespace")
-    .desc("Legal table namespace")
-    .build
-
-  val legalColumnFamily: Option = Option.builder("lecf")
-    .required(false)
-    .hasArg(true)
-    .argName("COLUMN FAMILY")
-    .longOpt("legal-column-family")
-    .desc("Legal column family")
-    .build
-
-  val legalHfilePath: Option = Option.builder("lefp")
-    .required(false)
-    .hasArg(true)
-    .argName("FILE PATH")
-    .longOpt("legal-file-path")
-    .desc("Legal file path")
-    .build
-
-  val localTableName: Option = Option.builder("lotn")
-    .required(false)
-    .hasArg(true)
-    .argName("TABLE NAME")
-    .longOpt("local-table-name")
-    .desc("HBase Local table name")
-    .build
-
-  val localNamespace: Option = Option.builder("lons")
-    .required(false)
-    .hasArg(true)
-    .argName("NAMESPACE")
-    .longOpt("local-table-namespace")
-    .desc("Local table namespace")
-    .build
-
-  val localColumnFamily: Option = Option.builder("locf")
-    .required(false)
-    .hasArg(true)
-    .argName("COLUMN FAMILY")
-    .longOpt("local-column-family")
-    .desc("Local column family")
-    .build
-
-  val localHfilePath: Option = Option.builder("lofp")
-    .required(false)
-    .hasArg(true)
-    .argName("FILE PATH")
-    .longOpt("local-file-path")
-    .desc("Local file path")
-    .build
-
-  val reportingTableName: Option = Option.builder("retn")
-    .required(false)
-    .hasArg(true)
-    .argName("TABLE NAME")
-    .longOpt("reporting-table-name")
-    .desc("HBase Reporting table name")
-    .build
-
-  val reportingNamespace: Option = Option.builder("rens")
-    .required(false)
-    .hasArg(true)
-    .argName("NAMESPACE")
-    .longOpt("reporting-table-namespace")
-    .desc("Reporting table namespace")
-    .build
-
-  val reportingColumnFamily: Option = Option.builder("recf")
-    .required(false)
-    .hasArg(true)
-    .argName("COLUMN FAMILY")
-    .longOpt("reporting-column-family")
-    .desc("Reporting column family")
-    .build
-
-  val reportingHfilePath: Option = Option.builder("refp")
-    .required(false)
-    .hasArg(true)
-    .argName("FILE PATH")
-    .longOpt("reporting-file-path")
-    .desc("Reporting file path")
-    .build
-
-  val timePeriod: Option = Option.builder("tp")
-    .required(false)
-    .hasArg(true)
-    .argName("TIME PERIOD")
-    .longOpt("time-period")
-    .desc("Time Period")
-    .build
-
-  val payeFilePath: Option = Option.builder("paye")
-    .required(false)
-    .hasArg(true)
-    .argName("FILE PATH")
-    .longOpt("paye-file-path")
-    .desc("PAYE file path")
-    .build
-
-  val vatFilePath: Option = Option.builder("vat")
-    .required(false)
-    .hasArg(true)
-    .argName("FILE PATH")
-    .longOpt("vat-file-path")
-    .desc("VAT file path")
-    .build
-
-  val options = new Options
-
   options.addOption(help)
   options.addOption(debug)
 
-  options.addOption(enterpriseTableName)
-  options.addOption(enterpriseNamespace)
-  options.addOption(enterpriseColumnFamily)
-  options.addOption(enterpriseHfilePath)
+ AppOptions(options, shortOpt = "zoohost", required = false, hasArg = true,
+    "HOST:PORT[,HOST:PORT...]", "zookeeper-host", "host:port[,host:port] for the zookeeper instance(s)",
+    OptionNames.ZookeeperHost)
 
-  options.addOption(linksTableName)
-  options.addOption(linksNamespace)
-  options.addOption(linksColumnFamily)
-  options.addOption(linksHfilePath)
+  AppOptions(options, shortOpt = "zooformat", required = false, hasArg = true,
+    "FORMAT", "zookeeper-result-format", "Format of the unique number, default: 11%07d",
+    OptionNames.ZookeeperFormat)
 
-  options.addOption(legalTableName)
-  options.addOption(legalNamespace)
-  options.addOption(legalColumnFamily)
-  options.addOption(legalHfilePath)
+  AppOptions(options, shortOpt = "zoopath", required = false, hasArg = true,
+    "PATH", "zookeeper-path", "Zookeeper path for unique id, default: /ids/enterprise/id",
+    OptionNames.ZookeeperPath)
 
-  options.addOption(localTableName)
-  options.addOption(localNamespace)
-  options.addOption(localColumnFamily)
-  options.addOption(localHfilePath)
+  AppOptions(options, shortOpt = "zooSessTimeOut", required = false, hasArg = true,
+    "TIMEOUT", "zookeeper-session-timeout", "Zookeeper session timeout in seconds, default: 5",
+    OptionNames.ZookeeperSessionTimeout)
 
-  options.addOption(reportingTableName)
-  options.addOption(reportingNamespace)
-  options.addOption(reportingColumnFamily)
-  options.addOption(reportingHfilePath)
+  AppOptions(options, shortOpt = "zooConnTimeOut", required = false, hasArg = true,
+    "TIMEOUT", "zookeeper-session-timeout", "Zookeeper connection timeout in seconds, default: 5",
+    OptionNames.ZookeeperConnectionTimeout)
 
-  options.addOption(timePeriod)
+  AppOptions(options, shortOpt = "etn", required = false, hasArg = true,
+    "TABLE NAME", "enterprise-table-name", "HBase Enterprise table name",
+    OptionNames.HBaseEnterpriseTableName)
 
-  options.addOption(payeFilePath)
-  options.addOption(vatFilePath)
+  AppOptions(options, shortOpt = "ens", required = false, hasArg = true,
+    "NAMESPACE", "enterprise-table-namespace", "Enterprise table namespace",
+    OptionNames.HBaseEnterpriseTableNamespace)
+
+  AppOptions(options, shortOpt = "ecf", required = false, hasArg = true,
+    "COLUMN FAMILY", "enterprise-column-family", "Enterprise column family",
+    OptionNames.HBaseEnterpriseColumnFamily)
+
+  AppOptions(options, shortOpt = "efp", required = false, hasArg = true,
+    argName = "FILE PATH", longOpt = "enterprise-file-path", desc = "Enterprise file path",
+    OptionNames.PathToEnterpriseHFile)
+
+  AppOptions(options, shortOpt = "ltn", required = false, hasArg = true,
+    argName = "TABLE NAME", longOpt = "links-table-name", desc = "HBase Links table name",
+    OptionNames.HBaseLinksTableName)
+
+  AppOptions(options, "lns", required = false, hasArg = true,
+    "NAMESPACE", "links-table-namespace", "Links table namespace",
+    OptionNames.HBaseLinksTableNamespace)
+
+  AppOptions(options, "lcf", required = false, hasArg = true,
+    "COLUMN FAMILY", "links-column-family", "Links column family",
+    OptionNames.HBaseLinksColumnFamily)
+
+  AppOptions(options, "lfp", required = false, hasArg = true,
+    "FILE PATH", "links-file-path", "Links file path",
+    OptionNames.PathToLinksHfile)
+
+  AppOptions(options, "letn", required = false, hasArg = true,
+    "TABLE NAME", "legal-table-name", "HBase Legal table name",
+    OptionNames.HBaseLegalUnitsTableName)
+
+  AppOptions(options, "lens", required = false, hasArg = true,
+    "NAMESPACE", "legal-table-namespace", "Legal table namespace",
+    OptionNames.HBaseLegalUnitsNamespace)
+
+  AppOptions(options, "lecf", required = false, hasArg = true,
+    "COLUMN FAMILY", "legal-column-family", "Legal column family",
+    OptionNames.HBaseLegalUnitsColumnFamily)
+
+  AppOptions(options, "lefp", required = false, hasArg = true,
+    "FILE PATH", "legal-file-path", "Legal file path",
+    OptionNames.PathToLegalUnitsHFile)
+
+  AppOptions(options, "lotn", required = false, hasArg = true,
+    "TABLE NAME", "local-table-name", "HBase Local table name",
+    OptionNames.HBaseLocalUnitsTableName)
+
+  AppOptions(options, "lons", required = false, hasArg = true,
+    "NAMESPACE", "local-table-namespace", "Local table namespace",
+    OptionNames.HBaseLocalUnitsNamespace)
+
+  AppOptions(options, "locf", required = false, hasArg = true,
+    "COLUMN FAMILY", "local-column-family", "Local column family",
+    OptionNames.HBaseLocalUnitsColumnFamily)
+
+  AppOptions(options, "lofp", required = false, hasArg = true,
+    "FILE PATH", "local-file-path", "Local file path",
+    OptionNames.PathToLocalUnitsHFile)
+
+  AppOptions(options, "retn", required = false, hasArg = true,
+    "TABLE NAME", "reporting-table-name", "HBase Reporting table name",
+    OptionNames.HBaseReportingUnitsTableName)
+
+  AppOptions(options, "rens", required = false, hasArg = true,
+    "NAMESPACE", "reporting-table-namespace", "Reporting table namespace",
+    OptionNames.HBaseReportingUnitsNamespace)
+
+  AppOptions(options, "recf", required = false, hasArg = true,
+    "COLUMN FAMILY", "reporting-column-family", "Reporting column family",
+    OptionNames.HBaseReportingUnitsColumnFamily)
+
+  AppOptions(options, "refp", required = false, hasArg = true,
+    "FILE PATH", "reporting-file-path", "Reporting file path",
+    OptionNames.PathToReportingUnitsHFile)
+
+  AppOptions(options, "tp", required = false, hasArg = true,
+    "TIME PERIOD", "time-period", "Time Period",
+    OptionNames.TimePeriod)
+
+  AppOptions(options, "paye", required = false, hasArg = true,
+    "FILE PATH", "paye-file-path", "PAYE file path",
+    OptionNames.PayeFilePath)
+
+  AppOptions(options, "vat", required = false, hasArg = true,
+    "FILE PATH", "vat-file-path", "VAT file path",
+    OptionNames.VatFilePath)
+
+  AppOptions(options, "geo", required = false, hasArg = true,
+    "FILE PATH", "path-to-geo", "GEO file path",
+    OptionNames.PathToGeo)
+
+  AppOptions(options, "geoShort", required = false, hasArg = true,
+    "FILE PATH", "path-to-geo-short", "GEO short file path",
+      OptionNames.PathToGeoShort)
+
+  AppOptions(options, "hiveDB", required = false, hasArg = true,
+    "DATABASE NAME", "hive-db-name", "Hive database name",
+      OptionNames.HiveDBName)
+
+  AppOptions(options, "hiveTable", required = false, hasArg = true,
+    "TABLE NAME", "hive-table-name", "Hive table name",
+      OptionNames.HiveTableName)
+
+
+  AppOptions(options, "hiveShortTable", required = false, hasArg = true,
+    "TABLE NAME", "hive-short-table-name", "Hive short table name",
+    OptionNames.HiveShortTableName)
 
   val optionGroup = new OptionGroup
   optionGroup.addOption(version)
@@ -284,9 +202,11 @@ object CommandLineParser {
         System.exit(0)
       }
 
-      if (line.hasOption(debug.getOpt)) {
-        System.setProperty("debug", "true")
-      }
+      if (line.hasOption(debug.getOpt)) System.setProperty("debug", "true")
+
+      // Other Options
+      updateEnvironment(line)
+
 
     } catch {
       case exp: ParseException =>
@@ -295,4 +215,51 @@ object CommandLineParser {
         System.exit(1)
     }
   }
+
+  /**
+    * The environment overrides values stored in the properties file
+    *
+    * @param line the option commandline
+    */
+  def updateEnvironment(line: CommandLine): Unit = {
+
+    for (name <- line.getOptions) {
+
+      val v: AppOptions = AppOptions.opt(name.getOpt)
+
+      println(s"setting ${v.optionName} to ${name.getValue}")
+      System.setProperty(v.optionName, name.getValue)
+    }
+
+  }
+
+}
+
+class AppOptions(shortOpt: String, required: Boolean, hasArg: Boolean, argName: String,
+                 longOpt: String, desc: String, val optionName: String)(implicit val options: Options) {
+
+
+  val option: Option = Option.builder(shortOpt)
+    .required(required)
+    .hasArg(hasArg)
+    .argName(argName)
+    .longOpt(longOpt)
+    .desc(desc)
+    .build
+
+  options.addOption(option)
+}
+
+object AppOptions {
+
+  var opt: Map[String, AppOptions] = Map()
+
+  def apply(implicit options: Options, shortOpt: String, required: Boolean, hasArg: Boolean, argName: String,
+            longOpt: String, desc: String, optionName: String): Option = {
+
+    val v = new AppOptions(shortOpt, required, hasArg, argName, longOpt, desc, optionName)
+    opt += shortOpt -> v
+    v.option
+  }
+
 }

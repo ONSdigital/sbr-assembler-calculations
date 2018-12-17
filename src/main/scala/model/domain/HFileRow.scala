@@ -13,6 +13,11 @@ import scala.util.Try
 
 case class HFileRow(key: String, cells: Iterable[KVCell[String, String]]) {
 
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
   def getLinkId: String = key.split("~").last
 
   def getValueOrNull(key: String, byKey: Boolean = true): String = getCellValue(key, byKey).orNull
@@ -28,6 +33,11 @@ case class HFileRow(key: String, cells: Iterable[KVCell[String, String]]) {
       case KVCell(value, `key`) => Option(value)
     }.flatten //.getOrElse(null)
 
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
   def getCellArrayValue(key: String): Iterable[String] = {
 
     val result = cells.collect {
@@ -44,14 +54,24 @@ case class HFileRow(key: String, cells: Iterable[KVCell[String, String]]) {
     case _ => false
   }
 
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
   //put type set as default
   def toHFileCells(columnFamily: String, kvType: Int = KeyValue.Type.Put.ordinal()): Iterable[HFileCell] =
     cells.map(cell => HFileCell(key, columnFamily, cell.column, cell.value, kvType))
 
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
   def toEntRow: GenericRowWithSchema = {
     try {
       new GenericRowWithSchema(Array(getValueOrStr("ern"),
-        getValueOrStr("prn", default = AppParams.DEFAULT_PRN),
+        getValueOrStr("prn", default = AppParams.DefaultPRN),
         getValueOrNull("entref"),
         getValueOrStr("name"),
         getValueOrNull("trading_style"),
@@ -63,7 +83,7 @@ case class HFileRow(key: String, cells: Iterable[KVCell[String, String]]) {
         getValueOrStr("postcode"),
         getValueOrStr("sic07"),
         getValueOrStr("legal_status"),
-        getValueOrStr("working_props", default = AppParams.DEFAULT_WORKING_PROPS)
+        getValueOrStr("working_props", default = AppParams.DefaultWorkingProps)
       ), spark.entRowSchema)
     } catch {
       case e: java.lang.RuntimeException =>
@@ -72,6 +92,11 @@ case class HFileRow(key: String, cells: Iterable[KVCell[String, String]]) {
     }
   }
 
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
   def toLeuRow: GenericRowWithSchema = {
 
     try {
@@ -132,73 +157,78 @@ case class HFileRow(key: String, cells: Iterable[KVCell[String, String]]) {
     ), spark.ruRowSchema)
   }
 
-  def toLeuLinksRow: GenericRowWithSchema = new GenericRowWithSchema(Array(
-    getLinkId,
-    getValueOrStr("p_ENT"),
-    getCellValue("CH", byKey = false).map(_.substring(2)).orNull,
-    Try {
-      getCellArrayValue("PAYE").map(paye => if (paye.startsWith("c_")) {
-        paye.substring(2)
-      } else paye)
-    }.getOrElse(null),
+//  def toLeuLinksRow: GenericRowWithSchema = new GenericRowWithSchema(Array(
+//    getLinkId,
+//    getValueOrStr("p_ENT"),
+//    getCellValue("CH", byKey = false).map(_.substring(2)).orNull,
+//    Try {
+//      getCellArrayValue("PAYE").map(paye => if (paye.startsWith("c_")) {
+//        paye.substring(2)
+//      } else paye)
+//    }.getOrElse(null),
+//
+//    Try {
+//      getCellArrayValue("VAT").map(vat => if (vat.startsWith("c_")) {
+//        vat.substring(2)
+//      } else vat)
+//    }.getOrElse(null)
+//  ), spark.linksLeuRowSchema)
 
-    Try {
-      getCellArrayValue("VAT").map(vat => if (vat.startsWith("c_")) {
-        vat.substring(2)
-      } else vat)
-    }.getOrElse(null)
-  ), spark.linksLeuRowSchema)
+//  def toUbrnErnRow: GenericRowWithSchema = {
+//
+//    new GenericRowWithSchema(Array(
+//      getLinkId,
+//      getValueOrStr("p_ENT")
+//    ), spark.existingLuBiRowSchema)
+//  }
 
-  def toUbrnErnRow: GenericRowWithSchema = {
-
-    new GenericRowWithSchema(Array(
-      getLinkId,
-      getValueOrStr("p_ENT")
-    ), spark.existingLuBiRowSchema)
-  }
-
-  def toLouRow: GenericRowWithSchema = {
-
-    try {
-      new GenericRowWithSchema(Array(
-
-        getValueOrStr("lurn"),
-        getValueOrNull("luref"),
-        getValueOrStr("ern"),
-        getValueOrStr("prn"),
-        getValueOrStr("rurn"),
-        getValueOrNull("ruref"),
-        getValueOrStr("name"),
-        getValueOrNull("entref"),
-        getValueOrNull("trading_style"),
-        getValueOrStr("address1"),
-        getValueOrNull("address2"),
-        getValueOrNull("address3"),
-        getValueOrNull("address4"),
-        getValueOrNull("address5"),
-        getValueOrStr("postcode"),
-        getValueOrStr("region"),
-        getValueOrStr("sic07"),
-        getValueOrNull("employees"),
-        getValueOrStr("employment", default = "0")
-      ), spark.louRowSchema)
-    } catch {
-      case e: java.lang.RuntimeException =>
-        println(s"Exception reading enterprise row with ern: ${getValueOrStr("ern")}")
-        throw e
-    }
-  }
+//  def toLouRow: GenericRowWithSchema = {
+//
+//    try {
+//      new GenericRowWithSchema(Array(
+//
+//        getValueOrStr("lurn"),
+//        getValueOrNull("luref"),
+//        getValueOrStr("ern"),
+//        getValueOrStr("prn"),
+//        getValueOrStr("rurn"),
+//        getValueOrNull("ruref"),
+//        getValueOrStr("name"),
+//        getValueOrNull("entref"),
+//        getValueOrNull("trading_style"),
+//        getValueOrStr("address1"),
+//        getValueOrNull("address2"),
+//        getValueOrNull("address3"),
+//        getValueOrNull("address4"),
+//        getValueOrNull("address5"),
+//        getValueOrStr("postcode"),
+//        getValueOrStr("region"),
+//        getValueOrStr("sic07"),
+//        getValueOrNull("employees"),
+//        getValueOrStr("employment", default = "0")
+//      ), spark.louRowSchema)
+//    } catch {
+//      case e: java.lang.RuntimeException =>
+//        println(s"Exception reading enterprise row with ern: ${getValueOrStr("ern")}")
+//        throw e
+//    }
+//  }
 
   def toHFileCellRow(colFamily: String): Iterable[(String, HFile.HFileCell)] = {
     cells.map(cell => (key, HFileCell(key, colFamily, cell.column, cell.value)))
   }
 
-  def toPutHFileEntries(colFamily: String): Iterable[(ImmutableBytesWritable, KeyValue)] = {
-    cells.flatMap(kv =>
-      Seq((new ImmutableBytesWritable(key.getBytes()), new KeyValue(key.getBytes, colFamily.getBytes, kv.column.getBytes, kv.value.getBytes)))
-    )
-  }
+//  def toPutHFileEntries(colFamily: String): Iterable[(ImmutableBytesWritable, KeyValue)] = {
+//    cells.flatMap(kv =>
+//      Seq((new ImmutableBytesWritable(key.getBytes()), new KeyValue(key.getBytes, colFamily.getBytes, kv.column.getBytes, kv.value.getBytes)))
+//    )
+//  }
 
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
   def toDeleteHFileEntries(colFamily: String): Iterable[(ImmutableBytesWritable, KeyValue)] = {
     val excludedColumns = Seq("p_ENT")
     if (key.contains("~LEU~")) {
@@ -211,8 +241,20 @@ case class HFileRow(key: String, cells: Iterable[KVCell[String, String]]) {
     }
   }
 
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
+
   def toDeletePeriodHFileEntries(colFamily: String): Iterable[(ImmutableBytesWritable, KeyValue)] =
     Seq((new ImmutableBytesWritable(key.getBytes()), new KeyValue(key.getBytes, colFamily.getBytes, cells.head.column.getBytes, HConstants.LATEST_TIMESTAMP, KeyValue.Type.DeleteFamily)))
+
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
 
   def toDeleteHFile(colFamily: String): Iterable[(ImmutableBytesWritable, KeyValue)] = {
     val excludedColumns = Seq("p_ENT")
@@ -226,6 +268,12 @@ case class HFileRow(key: String, cells: Iterable[KVCell[String, String]]) {
     }
   }
 
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
+
   def toDeleteHFileRows(colFamily: String): Iterable[(String, HFile.HFileCell)] = {
     val excludedColumns = Seq("p_ENT")
     if (key.contains("~LEU~")) {
@@ -238,10 +286,21 @@ case class HFileRow(key: String, cells: Iterable[KVCell[String, String]]) {
     }
   }
 
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
   def toDeleteColumnsExcept(colFamily: String, columns: Seq[String]): Iterable[KeyValue] = cells.filterNot(cell => columns.contains(cell.column)).map(kv =>
 
     new KeyValue(key.getBytes, colFamily.getBytes, kv.column.getBytes, HConstants.LATEST_TIMESTAMP, KeyValue.Type.DeleteColumn)
   )
+
+  /**
+    * Not Used
+    * @param colFamily
+    * @return
+    */
 
   def toPrintString: String = {
     val key = this.key
@@ -257,7 +316,7 @@ case class HFileRow(key: String, cells: Iterable[KVCell[String, String]]) {
 
 object HFileRow {
 
-  def apply(entry: (String, Iterable[(String, String)])) = new HFileRow(entry._1, entry._2.map(c => KVCell(c)).toSeq)
+  def apply(entry: (String, Iterable[(String, String)])): HFileRow = new HFileRow(entry._1, entry._2.map(c => KVCell(c)).toSeq)
 
   def apply(result: Result): HFileRow = {
     val rowKey = Bytes.toString(result.getRow)

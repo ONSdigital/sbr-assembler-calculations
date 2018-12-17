@@ -3,19 +3,19 @@ import org.apache.spark.sql.{DataFrame, Row}
 
 package object spark {
 
-  val parquetRowSchema: StructType = new StructType()
-    .add(StructField("BusinessName", StringType, nullable = true))
-    .add(StructField("CompanyNo", StringType, nullable = true))
-    .add(StructField("EmploymentBands", StringType, true))
-    .add(StructField("IndustryCode", StringType, true))
-    .add(StructField("LegalStatus", StringType, true))
-    .add(StructField("PayeRefs", ArrayType(StringType, true), true))
-    .add(StructField("PostCode", StringType, true))
-    .add(StructField("TradingStatus", StringType, true))
-    .add(StructField("Turnover", StringType, true))
-    .add(StructField("UPRN", StringType, true))
-    .add(StructField("VatRefs", ArrayType(StringType, true), true))
-    .add(StructField("id", StringType, false))
+//  val parquetRowSchema: StructType = new StructType()
+//    .add(StructField("BusinessName", StringType, nullable = true))
+//    .add(StructField("CompanyNo", StringType, nullable = true))
+//    .add(StructField("EmploymentBands", StringType, true))
+//    .add(StructField("IndustryCode", StringType, true))
+//    .add(StructField("LegalStatus", StringType, true))
+//    .add(StructField("PayeRefs", ArrayType(StringType, true), true))
+//    .add(StructField("PostCode", StringType, true))
+//    .add(StructField("TradingStatus", StringType, true))
+//    .add(StructField("Turnover", StringType, true))
+//    .add(StructField("UPRN", StringType, true))
+//    .add(StructField("VatRefs", ArrayType(StringType, true), true))
+//    .add(StructField("id", StringType, false))
 
   val biWithErnSchema: StructType = new StructType()
     .add(StructField("ern", StringType, true))
@@ -281,6 +281,8 @@ package object spark {
                    ): Option[T] = if (isNull(fieldName)) None else {
 
       val v = row.getAs[T](fieldName)
+
+
       if (v.isInstanceOf[String] && v.asInstanceOf[String].trim.isEmpty) None
       else if (v == null) None
       else eval match {
