@@ -2,13 +2,15 @@ import sbt.Keys.version
 import sbt.Resolver
 
 lazy val Versions = new {
-  val hbase = "1.2.0-cdh5.13.1"
-  val spark = "2.3.0.cloudera4"
+  //  val hbase = "1.2.0-cdh5.13.1"
+  //  val spark = "2.3.0.cloudera4"
+  val hbase = "1.2.6"
+  val spark = "2.2.0"
   val scala = "2.11.8"
 }
 
 resolvers += "ClouderaRepo" at "https://repository.cloudera.com/artifactory/cloudera-repos"
-resolvers += "Local Maven Repository" at "file:///home/paul/.m2/repository"
+//resolvers += "Local Maven Repository" at "file:///home/paul/.m2/repository"
 resolvers += Resolver.bintrayRepo("ons", "ONS-Registers")
 
 lazy val root = (project in file("."))
@@ -30,7 +32,7 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
 
       "uk.gov.ons" % "registers-sml" % "1.12",
-      "uk.gov.ons" % "sbr-assembler-common" % "0.1-SNAPSHOT",
+      "uk.gov.ons" %% "sbr-assembler-common" % "0.1-SNAPSHOT",
       "commons-cli" % "commons-cli" % "1.4",
       "com.typesafe" % "config" % "1.3.2",
 
